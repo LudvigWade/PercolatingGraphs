@@ -5,6 +5,8 @@ import java.io.*;
 public class Simulation {
 	private boolean[][] grid;
 	private Map<Integer,BooleanSet> map;
+	private List<Integer> list;
+	private List<Integer> workinglist;
 
 	public static void main(String[] args) {
 		Scanner s = new Scanner(System.in);
@@ -19,15 +21,25 @@ public class Simulation {
 	
 	public Simulation(int size, int nbr, int printcount) {
 		int[] successes = new int[size*size+1];
-		Random r = new Random();
+		list = new ArrayList<Integer>(size*size);
+		workinglist = new ArrayList<Integer>(size*size);
+		map = new HashMap<>();
+		for (int i = 0; i<size*size; i++) {
+			list.add(i);
+		}
 		for (int i = 0; i<nbr; i++) {
+			long startTime = System.currentTimeMillis();
 			prepare(size);
-			int[] res = sim(r);
+			long afterPrepTime = System.currentTimeMillis();
+			int[] res = sim();
 			for (int j = 0; j<successes.length; j++) {
 				successes[j] += res[j];
 			}
+			long endTime = System.currentTimeMillis();
 			if (i%printcount == 0) {
 				System.out.println(i + ": " + Arrays.toString(successes));
+				System.out.println("Time for prepare: " + (afterPrepTime-startTime));
+				System.out.println("Total time for one iteration: " + (endTime - startTime));
 			}
 		}
 		double[] prob = new double[successes.length];
@@ -62,17 +74,20 @@ public class Simulation {
 	private void prepare(int gridsize) {
 		grid = new boolean[gridsize][gridsize];
 		grid[gridsize/2][gridsize/2] = true;
-		map = new HashMap<>();
-		map.put(grid.length*grid.length/2, new BooleanSet());
-		map.get(grid.length*grid.length/2).set.add(grid.length*grid.length/2);
+		map.clear();
+		map.put(gridsize*gridsize/2, new BooleanSet());
+		map.get(gridsize*gridsize/2).set.add(gridsize*gridsize/2);
+		workinglist.clear();
+		workinglist.addAll(list);
+		Collections.shuffle(workinglist);
 	}
 	
-	private int[] sim(Random r) {
+	private int[] sim() {
 		boolean connected = false;
 		int nbr = 0;
 		int[] ret = new int[grid.length*grid.length+1];
 		while (!connected) {
-			int next = r.nextInt(grid.length*grid.length);
+			int next = workinglist.remove(workinglist.size()-1);
 			int x = next/grid.length;
 			int y = next%grid.length;
 			if (grid[x][y]) {
