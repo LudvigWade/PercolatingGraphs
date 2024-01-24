@@ -35,6 +35,7 @@ public class SimulationDFS {
 			}
 			long endTime = System.currentTimeMillis();
 			if (i%printcount == 0) {
+				System.out.println(i);
 				//System.out.println(i + ": " + Arrays.toString(successes));
 				System.out.println("Time for prepare: " + (afterPrepTime-startTime));
 				System.out.println("Total time for one iteration: " + (endTime - startTime));
@@ -45,28 +46,6 @@ public class SimulationDFS {
 			prob[i] = ((double) successes[i])/(double) nbr;
 		}
 		System.out.println("Simulation finished: \n" + Arrays.toString(prob));
-	}
-	
-	
-	/** Checks neighbors to coordinate to see if they are true.
-	 * 
-	 * @return	boolean array representing each direction [N,S,W,E]
-	 */
-	private boolean[] checkNeigh(int x, int y) {
-		boolean[] ret = new boolean[4];
-		if (x > 0 && grid[x-1][y]) { //Above
-			ret[0] = true;
-		}
-		if (x+1 < grid.length && grid[x+1][y]){ //Below
-			ret[1] = true;
-		}
-		if (y > 0 && grid[x][y-1]) { //Left
-			ret[2] = true;
-		}
-		if (y+1 < grid[x].length && grid[x][y+1]) { //Right
-			ret[3] = true;
-		}
-		return ret;
 	}
 	
 	private void prepare(int gridsize) {
