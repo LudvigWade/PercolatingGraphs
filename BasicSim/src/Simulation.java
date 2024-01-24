@@ -37,7 +37,7 @@ public class Simulation {
 			}
 			long endTime = System.currentTimeMillis();
 			if (i%printcount == 0) {
-				System.out.println(i + ": " + Arrays.toString(successes));
+				//System.out.println(i + ": " + Arrays.toString(successes));
 				System.out.println("Time for prepare: " + (afterPrepTime-startTime));
 				System.out.println("Total time for one iteration: " + (endTime - startTime));
 			}
@@ -73,10 +73,10 @@ public class Simulation {
 	
 	private void prepare(int gridsize) {
 		grid = new boolean[gridsize][gridsize];
-		grid[gridsize/2][gridsize/2] = true;
+		//grid[gridsize/2][gridsize/2] = true;
 		map.clear();
-		map.put(gridsize*gridsize/2, new BooleanSet());
-		map.get(gridsize*gridsize/2).set.add(gridsize*gridsize/2);
+		//map.put(gridsize*gridsize/2, new BooleanSet());
+		//map.get(gridsize*gridsize/2).set.add(gridsize*gridsize/2);
 		workinglist.clear();
 		workinglist.addAll(list);
 		Collections.shuffle(workinglist);
@@ -166,7 +166,7 @@ public class Simulation {
 					map.get(next).containsEdge = true;
 				}
 			}
-			if (map.get(grid.length*grid.length/2).containsEdge) {
+			if (map.containsKey(grid.length*grid.length/2) && map.get(grid.length*grid.length/2).containsEdge) {
 				break;
 			}
 		}
