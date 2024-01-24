@@ -19,6 +19,7 @@ public class SimulationDFS {
 	}
 	
 	public SimulationDFS(int size, int nbr, int printcount) {
+		long procStart = System.currentTimeMillis();
 		int[] successes = new int[size*size+1];
 		list = new ArrayList<Integer>(size*size);
 		workinglist = new ArrayList<Integer>(size*size);
@@ -45,7 +46,14 @@ public class SimulationDFS {
 		for (int i = 0; i<successes.length; i++) {
 			prob[i] = ((double) successes[i])/(double) nbr;
 		}
+		long procEnd = System.currentTimeMillis();
 		System.out.println("Simulation finished: \n" + Arrays.toString(prob));
+		System.out.println("Time taken: " + (procEnd-procStart));
+		try (FileWriter out = new FileWriter(String.valueOf(size) + String.valueOf(nbr), true)) {
+			out.write("Grid size: " + size + "; Iterations: " + nbr +"; Time taken: " + (procEnd-procStart) + "\n" + Arrays.toString(prob) + "\n");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	private void prepare(int gridsize) {
