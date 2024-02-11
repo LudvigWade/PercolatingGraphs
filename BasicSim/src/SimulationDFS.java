@@ -1,4 +1,5 @@
 import java.util.*;
+import java.util.concurrent.*;
 import java.io.*;
 
 
@@ -6,8 +7,9 @@ public class SimulationDFS {
 	private boolean[][] grid;
 	private List<Integer> list;
 	private List<Integer> workinglist;
+	private static int completed = 0;
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws InterruptedException {
 		Scanner s = new Scanner(System.in);
 		System.out.print("Gridsize (odd number): ");
 		int size = s.nextInt();
@@ -15,7 +17,50 @@ public class SimulationDFS {
 		int nbr  = s.nextInt();
 		System.out.println("Print estimation every ___ iterations.");
 		int printcount = s.nextInt();
-		SimulationDFS sim = new SimulationDFS(size, nbr, printcount);
+		//SimulationDFS sim = new SimulationDFS(size, nbr, printcount);
+		
+		
+		//Multithread part
+		ExecutorService pool = Executors.newFixedThreadPool(2);
+		int together = 5;
+		Set<Future<?>> tasks = new HashSet<>();
+		
+		// Jonatans version
+		long startTime = System.currentTimeMillis();
+		double[] prob = new double[100000];
+		for (int i = 0; i<nbr/together; i++) {
+			Future<?> ft = pool.submit(() -> {
+				DFSSolver dfss = new DFSSolver(size,100000,together);
+				double[] newprob = dfss.solve();
+				increaseprob(newprob, prob, together);
+			});
+			tasks.add(ft);
+		}
+		pool.shutdown();
+		while (!pool.awaitTermination(60, TimeUnit.SECONDS)) {
+			System.out.println("Waiting");
+		}
+		for (int i = 0; i<prob.length; i++) {
+			prob[i] /= nbr/together;
+		}
+		//prob = newprob;
+		long endTime = System.currentTimeMillis();
+		System.out.println("Simulation finished: \n" + Arrays.toString(prob));
+		System.out.println("Time taken: " + (endTime-startTime) + "; Tasks completed: " + completed);
+		try (FileWriter out = new FileWriter(String.valueOf(size) + String.valueOf(nbr), true)) {
+			out.write("Grid size: " + size + "; Iterations: " + nbr +"; Time taken: " + (endTime-startTime) + "\n" + Arrays.toString(prob) + "\n");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static synchronized void increaseprob(double[] newprob, double[] oldprob, int together) {
+		for (int i = 0; i<oldprob.length; i++) {
+			oldprob[i] += newprob[i];
+		}
+		completed+=together;
+		System.out.println(completed);
+		return;
 	}
 	
 	public SimulationDFS(int size, int nbr, int printcount) {
