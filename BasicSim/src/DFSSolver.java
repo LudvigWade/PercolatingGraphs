@@ -36,10 +36,9 @@ public class DFSSolver {
 			int end = gridSize*gridSize-1;
 			int[] randNumbers = new int[gridSize*gridSize-1];
 			for(int l=0; l<gridSize*gridSize; l++) {
-				if (l != gridSize*gridSize/2) {
-					randNumbers[l]=l;
-				}
+				randNumbers[l]=l;
 			}
+			randNumbers[r]=randNumbers[randNumbers.length() -1];
 		
 			//randoms = random(gridSize);
 			removed = new boolean[gridSize * gridSize];
